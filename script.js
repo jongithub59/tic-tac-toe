@@ -12,7 +12,6 @@ function createBoard() {
     const getBoard = () => board //returns the array as board
 
     const showBoard = () => { //displays the play area and which squares are marked by each player
-        console.log(board)
         boardValues = board.map((cell) =>  cell.getMarker()) 
         // console.log(boardValues)
         boardValues = boardValues.join("|").replace(/([^|]+?\|[^|]+?\|[^|]+?)\|/g, "$1\n"); //new array specifically for display that adds "|" as a separator and makes a new line after 3 elements to represent a tic tac toe board
@@ -71,9 +70,8 @@ const createGame = () => {
     const players = createPlayers()
     const playerOne = players.players[0] 
     const playerTwo = players.players[1]
-    let playerOneWins = 0
-    let playerTwoWins = 0
     let turn = 0
+
 
 
     playerTurn = playerOne //sets Player1 as the first player to make a move
@@ -97,7 +95,7 @@ const createGame = () => {
         isReset = true
         playerOneSquares = []
         playerTwoSquares = []
-        turn = 0
+
         for(let i = 0; i < gameBoard.length; i++){
             gameBoard[i].addMarker(' ')
         }
@@ -106,7 +104,6 @@ const createGame = () => {
 
     const getReset = () => isReset
 
-    currentTurn()
     //play the rounds
     const playRound = function(cell) {
         console.log(`${getTurn().name} marks square ${cell}`)
@@ -129,7 +126,7 @@ const createGame = () => {
                 [2, 5, 8],
             ]
 
-            const createPlayerSquares = () => {
+            const createPlayerSquares = () => { //creates an array showing the squares marked by players using their indexes so that they can be compared to the win combinations to find a winner 
                 playerSquares = gameBoard.filter((cell) => {
                     cell.value = gameBoard.indexOf(cell)
                     return cell.getMarker() != ' '
@@ -143,21 +140,21 @@ const createGame = () => {
 
             // checks the player marked squares against the possible win combonations to detect a winner
             winCondition.some(combo => { // loops through the array of win combonation arrays
-                let isPlayerOneWin = !combo.some((i) => playerOneSquares.indexOf(i) == -1)  
+                let isPlayerOneWin = !combo.some((i) => playerOneSquares.indexOf(i) == -1)  //checks each index of the win condition array to see if it exists in the player marked array, if it doesn't, -1 will be returned, so we check for when -1 is nNOT returned
                 let isPlayerTwoWin = !combo.some((i) => playerTwoSquares.indexOf(i) == -1)
                 if (isPlayerOneWin) {
                     console.log("Player One Wins")
-                    playerOneWins + 1
                     resetRound()
                 }
                 if (isPlayerTwoWin) {
                     console.log("Player Two Wins")
-                    playerTwoWins + 1
+                    board.showBoard()
                     resetRound()
                 }
             })
             if (turn == 8) {
                 console.log('draw')
+                board.showBoard()
                 resetRound()
             }
 
@@ -165,10 +162,10 @@ const createGame = () => {
         checkWinner()
         nextTurn()
         currentTurn()
-
     }
 
-    return { playRound, getTurn, nextTurn, getReset }
+    return { playRound, getTurn, nextTurn, getReset, currentTurn }
 }
 
 const game = createGame()
+game.currentTurn() //calling currentTurn here ensures it will only play once at the start
