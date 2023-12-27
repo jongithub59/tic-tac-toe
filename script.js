@@ -71,8 +71,7 @@ const createGame = () => {
     const playerOne = players.players[0] 
     const playerTwo = players.players[1]
     let turn = 0
-
-
+    let winner = ''
 
     playerTurn = playerOne //sets Player1 as the first player to make a move
 
@@ -91,26 +90,22 @@ const createGame = () => {
         console.log(`It is ${getTurn().name}'s turn`)
     }
     
-    const resetRound = () => {
-        isReset = true
+    const resetRound = () => { //resets everything that was manipulated during the game
         playerOneSquares = []
         playerTwoSquares = []
 
         for(let i = 0; i < gameBoard.length; i++){
             gameBoard[i].addMarker(' ')
         }
-        createGame()
+        playerTurn = playerOne
     }
 
-    const getReset = () => isReset
-
+    
     //play the rounds
     const playRound = function(cell) {
         console.log(`${getTurn().name} marks square ${cell}`)
-        cell = cell - 1 //makes number line up with array indexes example: inputting 1 will mark index 0, the first array element
- 
-        if (gameBoard[cell].getMarker() != ' ') return console.log(`Square ${cell + 1} already marked, try again`) //stops the loop if the selectd square is marked by a player and let them retry
-
+        
+        
         board.placeMarker(cell, getTurn().marker) //accesses the board object, then runs the placeMarker method on the board array method given when calling playRound() and also taking the current active player's marker to use
         
         // let playerSquares = boardValues.getBoardValues()
@@ -125,47 +120,104 @@ const createGame = () => {
                 [2, 4, 6],
                 [2, 5, 8],
             ]
-
+            
             const createPlayerSquares = () => { //creates an array showing the squares marked by players using their indexes so that they can be compared to the win combinations to find a winner 
                 playerSquares = gameBoard.filter((cell) => {
                     cell.value = gameBoard.indexOf(cell)
                     return cell.getMarker() != ' '
                 })
-            playerTwoSquares = playerSquares.filter(cell => cell.getMarker() == 'X')
-            playerOneSquares = playerSquares.filter(cell => cell.getMarker() == 'O')
-            playerOneSquares = playerOneSquares.map( (cell) => cell.value)
-            playerTwoSquares = playerTwoSquares.map( (cell) => cell.value)
+                playerTwoSquares = playerSquares.filter(cell => cell.getMarker() == 'X')
+                playerOneSquares = playerSquares.filter(cell => cell.getMarker() == 'O')
+                playerOneSquares = playerOneSquares.map( (cell) => cell.value)
+                playerTwoSquares = playerTwoSquares.map( (cell) => cell.value)
             }
             createPlayerSquares()
-
+            
             // checks the player marked squares against the possible win combonations to detect a winner
             winCondition.some(combo => { // loops through the array of win combonation arrays
                 let isPlayerOneWin = !combo.some((i) => playerOneSquares.indexOf(i) == -1)  //checks each index of the win condition array to see if it exists in the player marked array, if it doesn't, -1 will be returned, so we check for when -1 is nNOT returned
                 let isPlayerTwoWin = !combo.some((i) => playerTwoSquares.indexOf(i) == -1)
-                if (isPlayerOneWin) {
-                    console.log("Player One Wins")
-                    resetRound()
-                }
-                if (isPlayerTwoWin) {
-                    console.log("Player Two Wins")
-                    board.showBoard()
-                    resetRound()
-                }
+                if (isPlayerOneWin) return winner = playerOne
+                if (isPlayerTwoWin) return winner = playerTwo
             })
             if (turn == 8) {
-                console.log('draw')
-                board.showBoard()
-                resetRound()
-            }
+                return winner = 'Draw'
 
+            }
+            
         }
         checkWinner()
         nextTurn()
         currentTurn()
     }
+    const getWinner = () => winner
 
-    return { playRound, getTurn, nextTurn, getReset, currentTurn }
+    const resetWinner = () => winner = ''
+    
+    return { playRound, getTurn, resetRound, getBoard: board.getBoard, getWinner, resetWinner }
 }
 
-const game = createGame()
-game.currentTurn() //calling currentTurn here ensures it will only play once at the start
+const screenController = function() {
+    const game = createGame()
+    // game.currentTurn() //calling currentTurn here ensures it will only play once at the start
+    const boardDisplay = document.querySelector('.main')
+    const turnDisplay = document.querySelector('.turn-display')
+    const errorDisplay = document.querySelector('.error-display')
+    const resetButton = document.querySelector('.reset')
+    const resultDisplay = document.querySelector('.result-display')
+
+    const updateScreen = () => {
+        boardDisplay.textContent = ''
+        const board = game.getBoard()
+        const currentPlayer = game.getTurn()
+        turnDisplay.textContent = `${currentPlayer.name}'s turn`
+        board.forEach((index) => {
+            const box = document.createElement('div')
+            box.classList.add('box')
+            box.dataset.cell = board.indexOf(index)
+            box.dataset.marker = index.getMarker()
+            box.textContent = index.getMarker()
+            boardDisplay.appendChild(box)
+        })
+    }
+
+    const freezeScreen = () => {// sets the value of winner to nothing and remove event listeners to "freeze" teh screen until the reset button is clicked
+        game.resetWinner()
+        boardDisplay.removeEventListener('click', clickHandler)
+    }
+    
+    const clickHandler = (e) => {
+        const clickedBox = e.target.dataset.cell
+        if (e.target.textContent != ' ') return errorDisplay.textContent = 'Square is already marked by a player' //stops the loop if the selectd square is marked by a player and let them retry
+        if (e.target.textContent = ' ') errorDisplay.textContent = ''
+        
+        game.playRound(clickedBox)
+        console.log(game.getWinner().marker)
+        if (game.getWinner().marker == 'O' || game.getWinner().marker == 'X') { //grab the winner value from checkWinner() and check if a player was assigned to it and check the marker
+            resultDisplay.textContent = `${game.getWinner().name} Wins`
+            freezeScreen()
+        }
+        if (game.getWinner() == 'Draw') {  //check if winner was assigned the string "draw"
+            resultDisplay.textContent = 'Draw'
+            freezeScreen()
+        }
+        
+        updateScreen()
+    }
+    
+    const resetBoard = () => {
+        boardDisplay.addEventListener('click', clickHandler)
+        boardDisplay.textContent = ' '
+        resultDisplay.textContent = ''
+        game.resetRound()
+        updateScreen()
+    }
+
+    boardDisplay.addEventListener('click', clickHandler)
+    resetButton.addEventListener('click', resetBoard)
+
+    updateScreen()
+
+}
+
+screenController()
