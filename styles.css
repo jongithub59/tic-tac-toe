@@ -21,6 +21,15 @@ body {
     background-color: rgb(182, 2398, 19);
 }
 
+.results {
+    display: flex;
+    margin: 10px 0;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+    align-items: center;
+    width: 500px;
+}
 .turn-display {
     margin: 20px auto;
     font-size: 20px;
@@ -30,7 +39,7 @@ body {
 }
 
 .error-display {
-    margin: 20px auto;
+    margin: 20px 0;
     font-size: 20px;
     font-weight: 600;
     width: 450px;
@@ -38,14 +47,35 @@ body {
 }
 
 .result-display {
-    margin: 20px auto;
+    margin: 10px 0;
     font-size: 30px;
     font-weight: 600;
-    width: 450px;
+    width: 550px;
     text-align: center;
 }
 
 .main {
+    display: flex;
+    justify-content: space-between;
+}
+
+.pic {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 1200px;
+    width: 900px;
+}
+
+.genji {
+    background-image: url(genji.png);
+    z-index: -1; /* puts element below the other */
+}
+
+.hanzo {
+    background-image: url(hanzo.png);
+}
+.board {
     display: grid;
     grid-template-rows: repeat(3, 200px);
     grid-template-columns: repeat(3, 200px);
@@ -53,8 +83,8 @@ body {
     justify-content: center;
     height: 600px;
     width: 600px;
-    margin: 40px auto;
-    box-shadow: 0px 0px 20px 1px black;
+    margin: 40px 0;
+    box-shadow: 0px 0px 30px black;
 }
 
 .reset {
@@ -63,7 +93,6 @@ body {
     align-items: center;
     font-size: 40px;
     font-weight: 600;
-    margin: auto;
     width: 300px;
     height: 100px;
     box-shadow: 0px 0px 5px 1px black;

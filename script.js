@@ -48,15 +48,17 @@ function Box() {
 }
 
 //create players
-function createPlayers(playerOne = 'Player One', playerTwo = 'Player Two') { //creates an array with two player objects with default names
+function createPlayers(playerOne = 'Genji', playerTwo = 'Hanzo') { //creates an array with two player objects with default names
     const players = [
         {
         name: playerOne,
         marker: 'O',
+        url: 'genji.png',
     },
      {
         name: playerTwo,
         marker: 'X',
+        url: 'hanzo.png',
      }
     ]
 
@@ -70,7 +72,7 @@ const createGame = () => {
     const players = createPlayers()
     const playerOne = players.players[0] 
     const playerTwo = players.players[1]
-    let turn = 0
+    let turn = 1
     let winner = ''
 
     playerTurn = playerOne //sets Player1 as the first player to make a move
@@ -93,7 +95,7 @@ const createGame = () => {
     const resetRound = () => { //resets everything that was manipulated during the game
         playerOneSquares = []
         playerTwoSquares = []
-
+        turn = 1
         for(let i = 0; i < gameBoard.length; i++){
             gameBoard[i].addMarker(' ')
         }
@@ -140,7 +142,7 @@ const createGame = () => {
                 if (isPlayerOneWin) return winner = playerOne
                 if (isPlayerTwoWin) return winner = playerTwo
             })
-            if (turn == 8) {
+            if (turn == 9) {
                 return winner = 'Draw'
 
             }
@@ -160,7 +162,7 @@ const createGame = () => {
 const screenController = function() {
     const game = createGame()
     // game.currentTurn() //calling currentTurn here ensures it will only play once at the start
-    const boardDisplay = document.querySelector('.main')
+    const boardDisplay = document.querySelector('.board')
     const turnDisplay = document.querySelector('.turn-display')
     const errorDisplay = document.querySelector('.error-display')
     const resetButton = document.querySelector('.reset')
