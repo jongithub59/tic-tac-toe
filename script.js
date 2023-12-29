@@ -20,13 +20,14 @@ function createBoard() {
 
     
 
-    const placeMarker = (cell, player) => { //takes in an array location and current player to place their marker
+    const placeMarker = (cell, player, playerIcon) => { //takes in an array location and current player to place their marker
         const unmarkedBoxes = board.filter((cell) => cell.getMarker() == ' ') //returns an array with all elements with a marker of -, or unmarked
 
         if (!unmarkedBoxes.length) return
 
         if (unmarkedBoxes.includes(board[cell]))  //checks that the selected array index is not alredy marked
             board[cell].addMarker(player) //adds the marker of the current player to the given array location 
+            board[cell].addIcon(playerIcon) //adds url here so it can be accessed later through the Box object
 
     }
     
@@ -36,14 +37,21 @@ function createBoard() {
 //create individual cells for the board
 function Box() {
     let marker = ' '
+    let icon = ''
 
     const addMarker = (player) => { //sets the array element's marker value to whatever the current player is
         marker = player
     }
 
+    const addIcon = (playerIcon) => { 
+        icon = playerIcon
+    }
+
     const getMarker = () => marker //returns marker when getMarker is called as a method
 
-    return { addMarker, getMarker }
+    const getIcon = () => icon
+
+    return { addMarker, addIcon, getMarker, getIcon }
 
 }
 
@@ -52,13 +60,13 @@ function createPlayers(playerOne = 'Genji', playerTwo = 'Hanzo') { //creates an 
     const players = [
         {
         name: playerOne,
-        marker: 'O',
-        url: 'genji.png',
+        marker: 'O', //marker used for logic purposes only
+        url: 'genji-marker.png', //url for image to be used to mark squares
     },
      {
         name: playerTwo,
         marker: 'X',
-        url: 'hanzo.png',
+        url: 'hanzo-marker.png',
      }
     ]
 
@@ -98,6 +106,8 @@ const createGame = () => {
         turn = 1
         for(let i = 0; i < gameBoard.length; i++){
             gameBoard[i].addMarker(' ')
+            gameBoard[i].addIcon('')
+            
         }
         playerTurn = playerOne
     }
@@ -108,7 +118,7 @@ const createGame = () => {
         console.log(`${getTurn().name} marks square ${cell}`)
         
         
-        board.placeMarker(cell, getTurn().marker) //accesses the board object, then runs the placeMarker method on the board array method given when calling playRound() and also taking the current active player's marker to use
+        board.placeMarker(cell, getTurn().marker, getTurn().url) //accesses the board object, then runs the placeMarker method on the board array method given when calling playRound() and also taking the current active player's marker to use
         
         // let playerSquares = boardValues.getBoardValues()
         const checkWinner = () => {
@@ -141,11 +151,8 @@ const createGame = () => {
                 let isPlayerTwoWin = !combo.some((i) => playerTwoSquares.indexOf(i) == -1)
                 if (isPlayerOneWin) return winner = playerOne
                 if (isPlayerTwoWin) return winner = playerTwo
+                if (turn == 9 && isPlayerOneWin == false && isPlayerTwoWin == false) return winner = 'Draw'
             })
-            if (turn == 9) {
-                return winner = 'Draw'
-
-            }
             
         }
         checkWinner()
@@ -167,22 +174,32 @@ const screenController = function() {
     const errorDisplay = document.querySelector('.error-display')
     const resetButton = document.querySelector('.reset')
     const resultDisplay = document.querySelector('.result-display')
-
-    const updateScreen = () => {
+    
+    const updateScreen = (reset) => {
         boardDisplay.textContent = ''
         const board = game.getBoard()
         const currentPlayer = game.getTurn()
         turnDisplay.textContent = `${currentPlayer.name}'s turn`
-        board.forEach((index) => {
+        board.forEach((index) => { //loops through every Box
             const box = document.createElement('div')
+            const img = document.createElement('img')
+            img.classList.add('icon')
+            img.src = index.getIcon() //adds the src attribute and its value using the icon saved to the Box
             box.classList.add('box')
             box.dataset.cell = board.indexOf(index)
             box.dataset.marker = index.getMarker()
-            box.textContent = index.getMarker()
+            // box.textContent = index.getMarker() //no longer needed since marker is only used for logic now
             boardDisplay.appendChild(box)
-        })
+            if (img.src.includes('genji') || img.src.includes('hanzo')) { //need to check here because each Box has a default img src, so a blank image will display if we don't check
+            box.appendChild(img) //an image icon is now used as a display marker
+                if (reset == true) { //remove all images if reset is true from clicking the reset button
+                    box.removeChild(img) 
+                }
+            }
+    })
+    reset = false
     }
-
+    
     const freezeScreen = () => {// sets the value of winner to nothing and remove event listeners to "freeze" teh screen until the reset button is clicked
         game.resetWinner()
         boardDisplay.removeEventListener('click', clickHandler)
@@ -190,8 +207,9 @@ const screenController = function() {
     
     const clickHandler = (e) => {
         const clickedBox = e.target.dataset.cell
-        if (e.target.textContent != ' ') return errorDisplay.textContent = 'Square is already marked by a player' //stops the loop if the selectd square is marked by a player and let them retry
-        if (e.target.textContent = ' ') errorDisplay.textContent = ''
+        console.log(e.target.dataset.marker)
+        if (e.target.dataset.marker != ' ') return errorDisplay.textContent = 'Square is already marked by a player' //stops the loop if the selectd square is marked by a player and let them retry
+        if (e.target.dataset.marker = ' ') errorDisplay.textContent = ''
         
         game.playRound(clickedBox)
         console.log(game.getWinner().marker)
@@ -208,18 +226,19 @@ const screenController = function() {
     }
     
     const resetBoard = () => {
+        let reset = true
         boardDisplay.addEventListener('click', clickHandler)
-        boardDisplay.textContent = ' '
+        // boardDisplay.forEach((box) => box.forEach((icon) => icon.remove))
         resultDisplay.textContent = ''
         game.resetRound()
-        updateScreen()
+        updateScreen(reset)
     }
-
+    
     boardDisplay.addEventListener('click', clickHandler)
     resetButton.addEventListener('click', resetBoard)
-
+    
     updateScreen()
-
+    
 }
 
 screenController()

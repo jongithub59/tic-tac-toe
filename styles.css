@@ -70,6 +70,7 @@ body {
 .genji {
     background-image: url(genji.png);
     z-index: -1; /* puts element below the other */
+    height: 1300px;
 }
 
 .hanzo {
@@ -110,4 +111,16 @@ body {
     background-color: rgb(215, 212, 208);
     align-items: center;
     justify-content: center;
+}
+
+.icon {
+    display: flex;
+    align-self: center;
+    justify-self: center;
+    width: 150px;
+    height: 150px;
+}
+
+.hidden {
+    display: none;
 }
