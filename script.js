@@ -6,7 +6,7 @@ function createBoard() {
 
 
     for (let i = 0; i < squares; i++) {
-        board.push(Box())
+        board.push(new Box()) //"new" keyword used since Box is now a class instead of an object
     }
 
     const getBoard = () => board //returns the array as board
@@ -35,24 +35,27 @@ function createBoard() {
 }
 
 //create individual cells for the board
-function Box() {
-    let marker = ' '
-    let icon = ''
-
-    const addMarker = (player) => { //sets the array element's marker value to whatever the current player is
-        marker = player
+class Box {
+    constructor() { //constructor that immediately creates the inital variables when called usin "new"
+    this.marker = ' ' //class uses "this"
+    this.icon = ''
     }
 
-    const addIcon = (playerIcon) => { 
-        icon = playerIcon
+    addMarker(player) { //sets the array element's marker value to whatever the current player is
+        this.marker = player
     }
 
-    const getMarker = () => marker //returns marker when getMarker is called as a method
+    addIcon(playerIcon) { 
+        this.icon = playerIcon
+    }
 
-    const getIcon = () => icon
-
-    return { addMarker, addIcon, getMarker, getIcon }
-
+    getMarker() { 
+        return this.marker //returns marker when getMarker is called as a method
+    }
+    getIcon() {
+        return this.icon
+    }
+    //now need to return an object with the functions we need to use elsewhere since "this" is used in place of it
 }
 
 //create players
