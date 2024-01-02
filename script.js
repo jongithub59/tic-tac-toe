@@ -88,6 +88,13 @@ const createGame = () => {
 
     playerTurn = playerOne //sets Player1 as the first player to make a move
 
+    const chooseHero = (hero) => { //changes the first player based on which hero icon is clicked
+        if (hero == 'genji') {
+            return playerTurn = playerOne
+        } else if (hero == 'hanzo')
+            return playerTurn = playerTwo
+    }
+
     const nextTurn = function() { //sets the other player as the active player
         turn++
         if (playerTurn == playerOne) {
@@ -166,7 +173,7 @@ const createGame = () => {
 
     const resetWinner = () => winner = ''
     
-    return { playRound, getTurn, resetRound, getBoard: board.getBoard, getWinner, resetWinner }
+    return { chooseHero, playRound, getTurn, resetRound, getBoard: board.getBoard, getWinner, resetWinner }
 }
 
 const screenController = function() {
@@ -177,7 +184,11 @@ const screenController = function() {
     const errorDisplay = document.querySelector('.error-display')
     const resetButton = document.querySelector('.reset')
     const resultDisplay = document.querySelector('.result-display')
-    errorDisplay.textContent = 'Square is already marked by a player'
+    const heroSelection = document.querySelector('.choose-hero')
+    const genjiSelect = document.querySelector('#genji')
+    const hanzoSelect = document.querySelector('#hanzo')
+    turnDisplay.classList.add('hidden')
+    resetButton.classList.add('hidden')
     resultDisplay.classList.add('hidden')
     errorDisplay.classList.add('hidden')
     
@@ -205,16 +216,33 @@ const screenController = function() {
     })
     reset = false
     }
+
+    const chooseYourHero = (e) => {
+        game.chooseHero(e.target.id) //use the id of the image element to decide which hero will be player one
+        heroSelection.classList.add('hidden')
+        turnDisplay.classList.remove('hidden')
+        resetButton.classList.remove('hidden')
+        unFreezeScreen()
+        updateScreen() //updaet the screen so the new player one will be displayed
+    }
     
     const freezeScreen = () => {// sets the value of winner to nothing and remove event listeners to "freeze" teh screen until the reset button is clicked
         game.resetWinner()
         boardDisplay.removeEventListener('click', clickHandler)
     }
+
+    const unFreezeScreen = () => { //allow the board to be clicked again
+        boardDisplay.addEventListener('click', clickHandler)
+    }
     
     const clickHandler = (e) => {
         const clickedBox = e.target.dataset.cell
         console.log(e.target.dataset.marker)
-        if (e.target.dataset.marker != ' ') return errorDisplay.classList.remove('hidden') //stops the loop if the selected square is marked by a player and let them retry and reveal error message
+        if (e.target.dataset.marker != ' ') {
+            errorDisplay.classList.remove('hidden') //stops the loop if the selected square is marked by a player and let them retry and reveal error message
+            errorDisplay.textContent = 'Square is already marked by a player'
+            return
+        }
         if (e.target.dataset.marker = ' ') errorDisplay.classList.add('hidden') //hide teh error message as long as valid squares are clicked
         
         game.playRound(clickedBox)
@@ -234,20 +262,27 @@ const screenController = function() {
         
         updateScreen()
     }
-    
+
     const resetBoard = () => {
         let reset = true
         boardDisplay.addEventListener('click', clickHandler)
-        turnDisplay.classList.remove('hidden')
+        resetButton.classList.add('hidden')
+        turnDisplay.classList.add('hidden')
         resultDisplay.classList.add('hidden')
+        heroSelection.classList.remove('hidden')
         game.resetRound()
-        updateScreen(reset)
+        updateScreen(reset) //send the reset variable ad true to updateScreen
     }
     
+
+
+    genjiSelect.addEventListener('click', chooseYourHero)
+    hanzoSelect.addEventListener('click', chooseYourHero)
     boardDisplay.addEventListener('click', clickHandler)
     resetButton.addEventListener('click', resetBoard)
     
     updateScreen()
+    freezeScreen()
     
 }
 
