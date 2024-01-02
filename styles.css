@@ -1,13 +1,18 @@
+@font-face {
+    font-family: 'cyber';
+    src: url('Cyberpunks.ttf')
+}
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Tahoma, Geneva, Verdana, sans-serif;
+    font-family: cyber, sans-serif;
 }
 
 body {
     height: 100vh;
+    letter-spacing: 2px;
     background-color: rgb(154, 123, 110);
 }
 
@@ -15,6 +20,7 @@ body {
     display: flex;
     margin: auto;
     height: 10vh;
+    font-size: 40Px;
     width: 100%;
     justify-content: center;
     align-items: center;
@@ -23,7 +29,6 @@ body {
 
 .results {
     display: flex;
-    margin: 10px 0;
     flex-direction: column;
     justify-content: center;
     margin: auto;
@@ -31,24 +36,24 @@ body {
     width: 500px;
 }
 .turn-display {
-    margin: 20px auto;
-    font-size: 20px;
+    margin: 20px auto 10px;
+    font-size: 35px;
     font-weight: 600;
-    width: 200px;
+    width: 250px;
     text-align: center;
 }
 
 .error-display {
     margin: 20px 0;
-    font-size: 20px;
+    font-size: 25px;
     font-weight: 600;
-    width: 450px;
+    width: 550px;
     text-align: center;
 }
 
 .result-display {
-    margin: 10px 0;
-    font-size: 30px;
+    margin: 25px 0;
+    font-size: 50px;
     font-weight: 600;
     width: 550px;
     text-align: center;
@@ -68,13 +73,13 @@ body {
 }
 
 .genji {
-    background-image: url(genji.png);
+    background-image: url(pics/genji.png);
     z-index: -1; /* puts element below the other */
     height: 1300px;
 }
 
 .hanzo {
-    background-image: url(hanzo.png);
+    background-image: url(pics/hanzo.png);
 }
 .board {
     display: grid;
@@ -84,7 +89,7 @@ body {
     justify-content: center;
     height: 600px;
     width: 600px;
-    margin: 40px 0;
+    margin: 25px 0;
     box-shadow: 0px 0px 30px black;
 }
 
@@ -93,6 +98,8 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 40px;
+    letter-spacing: 2px;
+    margin: 20px;
     font-weight: 600;
     width: 300px;
     height: 100px;

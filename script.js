@@ -61,12 +61,12 @@ function createPlayers(playerOne = 'Genji', playerTwo = 'Hanzo') { //creates an 
         {
         name: playerOne,
         marker: 'O', //marker used for logic purposes only
-        url: 'genji-marker.png', //url for image to be used to mark squares
+        url: 'pics/genji-marker.png', //url for image to be used to mark squares
     },
      {
         name: playerTwo,
         marker: 'X',
-        url: 'hanzo-marker.png',
+        url: 'pics/hanzo-marker.png',
      }
     ]
 
@@ -174,6 +174,9 @@ const screenController = function() {
     const errorDisplay = document.querySelector('.error-display')
     const resetButton = document.querySelector('.reset')
     const resultDisplay = document.querySelector('.result-display')
+    errorDisplay.textContent = 'Square is already marked by a player'
+    resultDisplay.classList.add('hidden')
+    errorDisplay.classList.add('hidden')
     
     const updateScreen = (reset) => {
         boardDisplay.textContent = ''
@@ -208,17 +211,21 @@ const screenController = function() {
     const clickHandler = (e) => {
         const clickedBox = e.target.dataset.cell
         console.log(e.target.dataset.marker)
-        if (e.target.dataset.marker != ' ') return errorDisplay.textContent = 'Square is already marked by a player' //stops the loop if the selectd square is marked by a player and let them retry
-        if (e.target.dataset.marker = ' ') errorDisplay.textContent = ''
+        if (e.target.dataset.marker != ' ') return errorDisplay.classList.remove('hidden') //stops the loop if the selected square is marked by a player and let them retry and reveal error message
+        if (e.target.dataset.marker = ' ') errorDisplay.classList.add('hidden') //hide teh error message as long as valid squares are clicked
         
         game.playRound(clickedBox)
         console.log(game.getWinner().marker)
         if (game.getWinner().marker == 'O' || game.getWinner().marker == 'X') { //grab the winner value from checkWinner() and check if a player was assigned to it and check the marker
             resultDisplay.textContent = `${game.getWinner().name} Wins`
+            turnDisplay.classList.add('hidden')
+            resultDisplay.classList.remove('hidden')
             freezeScreen()
         }
         if (game.getWinner() == 'Draw') {  //check if winner was assigned the string "draw"
             resultDisplay.textContent = 'Draw'
+            turnDisplay.classList.add('hidden')
+            resultDisplay.classList.remove('hidden')
             freezeScreen()
         }
         
@@ -228,8 +235,8 @@ const screenController = function() {
     const resetBoard = () => {
         let reset = true
         boardDisplay.addEventListener('click', clickHandler)
-        // boardDisplay.forEach((box) => box.forEach((icon) => icon.remove))
-        resultDisplay.textContent = ''
+        turnDisplay.classList.remove('hidden')
+        resultDisplay.classList.add('hidden')
         game.resetRound()
         updateScreen(reset)
     }
