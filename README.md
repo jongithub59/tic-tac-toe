@@ -2,8 +2,8 @@
 
 ## An Interactive Game Between Two Rivals
 
-This project was built following the Odin Project [curriculum]([https://www.theodinproject.com](https://www.theodinproject.com/lessons/node-path-javascript-tic-tac-toe)
-and plays just like teh real TIc Tac Toe game.
+This project was built following the Odin Project [curriculum](https://www.theodinproject.com/lessons/node-path-javascript-tic-tac-toe)
+and plays just like the real TIc Tac Toe game.
 
 Live preview [here](https://jongithub59.github.io/tic-tac-toe/).
 
