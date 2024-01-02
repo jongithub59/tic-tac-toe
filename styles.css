@@ -27,7 +27,7 @@ body {
     background-color: rgb(182, 2398, 19);
 }
 
-.results {
+.board-details {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -35,6 +35,38 @@ body {
     align-items: center;
     width: 500px;
 }
+
+.choose-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px auto 10px;
+    font-size: 35px;
+    font-weight: 600;
+    width: 400px;
+    text-align: center;
+}
+
+.hero-selection img {
+    height: 150px;
+    width: 150px;
+    cursor: pointer;
+}
+
+#genji {
+    margin: 0 0 10px;
+}
+
+#hanzo {
+    height: 160px;
+    width: 140px;
+}
+
+.hero-selection {
+    display: flex;
+    justify-content: space-evenly;
+}
+
 .turn-display {
     margin: 20px auto 10px;
     font-size: 35px;
