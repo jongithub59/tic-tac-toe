@@ -12,7 +12,7 @@ function createBoard() {
     const getBoard = () => board //returns the array as board
 
     const showBoard = () => { //displays the play area and which squares are marked by each player
-        boardValues = board.map((cell) =>  cell.getMarker()) 
+        boardValues = board.map((cell) =>  cell.getMarker) 
         // console.log(boardValues)
         boardValues = boardValues.join("|").replace(/([^|]+?\|[^|]+?\|[^|]+?)\|/g, "$1\n"); //new array specifically for display that adds "|" as a separator and makes a new line after 3 elements to represent a tic tac toe board
         console.log(boardValues)
@@ -21,13 +21,13 @@ function createBoard() {
     
 
     const placeMarker = (cell, player, playerIcon) => { //takes in an array location and current player to place their marker
-        const unmarkedBoxes = board.filter((cell) => cell.getMarker() == ' ') //returns an array with all elements with a marker of -, or unmarked
+        const unmarkedBoxes = board.filter((cell) => cell.getMarker == ' ') //returns an array with all elements with a marker of -, or unmarked
 
         if (!unmarkedBoxes.length) return
 
         if (unmarkedBoxes.includes(board[cell]))  //checks that the selected array index is not alredy marked
-            board[cell].addMarker(player) //adds the marker of the current player to the given array location 
-            board[cell].addIcon(playerIcon) //adds url here so it can be accessed later through the Box object
+            board[cell].addMarker = player //adds the marker of the current player to the given array location 
+            board[cell].addIcon = playerIcon //adds url here so it can be accessed later through the Box object
 
     }
     
@@ -41,18 +41,18 @@ class Box {
     this.icon = ''
     }
 
-    addMarker(player) { //sets the array element's marker value to whatever the current player is
+    set addMarker(player) { //sets the array element's marker value to whatever the current player is
         this.marker = player
     }
 
-    addIcon(playerIcon) { 
+    set addIcon(playerIcon) { 
         this.icon = playerIcon
     }
 
-    getMarker() { 
+    get getMarker() { 
         return this.marker //returns marker when getMarker is called as a method
     }
-    getIcon() {
+    get getIcon() {
         return this.icon
     }
     //now need to return an object with the functions we need to use elsewhere since "this" is used in place of it
@@ -95,6 +95,8 @@ const createGame = () => {
             return playerTurn = playerTwo
     }
 
+    const returnTurn = () => turn
+
     const nextTurn = function() { //sets the other player as the active player
         turn++
         if (playerTurn == playerOne) {
@@ -115,8 +117,8 @@ const createGame = () => {
         playerTwoSquares = []
         turn = 1
         for(let i = 0; i < gameBoard.length; i++){
-            gameBoard[i].addMarker(' ')
-            gameBoard[i].addIcon('')
+            gameBoard[i].addMarker = ' '
+            gameBoard[i].addIcon = ''
             
         }
         playerTurn = playerOne
@@ -146,10 +148,10 @@ const createGame = () => {
             const createPlayerSquares = () => { //creates an array showing the squares marked by players using their indexes so that they can be compared to the win combinations to find a winner 
                 playerSquares = gameBoard.filter((cell) => {
                     cell.value = gameBoard.indexOf(cell)
-                    return cell.getMarker() != ' '
+                    return cell.getMarker != ' '
                 })
-                playerTwoSquares = playerSquares.filter(cell => cell.getMarker() == 'X')
-                playerOneSquares = playerSquares.filter(cell => cell.getMarker() == 'O')
+                playerTwoSquares = playerSquares.filter(cell => cell.getMarker == 'X')
+                playerOneSquares = playerSquares.filter(cell => cell.getMarker == 'O')
                 playerOneSquares = playerOneSquares.map( (cell) => cell.value)
                 playerTwoSquares = playerTwoSquares.map( (cell) => cell.value)
             }
@@ -161,7 +163,6 @@ const createGame = () => {
                 let isPlayerTwoWin = !combo.some((i) => playerTwoSquares.indexOf(i) == -1)
                 if (isPlayerOneWin) return winner = playerOne
                 if (isPlayerTwoWin) return winner = playerTwo
-                if (turn == 9 && isPlayerOneWin == false && isPlayerTwoWin == false) return winner = 'Draw'
             })
             
         }
@@ -173,7 +174,7 @@ const createGame = () => {
 
     const resetWinner = () => winner = ''
     
-    return { chooseHero, playRound, getTurn, resetRound, getBoard: board.getBoard, getWinner, resetWinner }
+    return { chooseHero, playRound, getTurn, resetRound, returnTurn, getBoard: board.getBoard, getWinner, resetWinner }
 }
 
 const screenController = function() {
@@ -201,10 +202,10 @@ const screenController = function() {
             const box = document.createElement('div')
             const img = document.createElement('img')
             img.classList.add('icon')
-            img.src = index.getIcon() //adds the src attribute and its value using the icon saved to the Box
+            img.src = index.getIcon //adds the src attribute and its value using the icon saved to the Box
             box.classList.add('box')
             box.dataset.cell = board.indexOf(index)
-            box.dataset.marker = index.getMarker()
+            box.dataset.marker = index.getMarker
             // box.textContent = index.getMarker() //no longer needed since marker is only used for logic now
             boardDisplay.appendChild(box)
             if (img.src.includes('genji') || img.src.includes('hanzo')) { //need to check here because each Box has a default img src, so a blank image will display if we don't check
@@ -245,16 +246,17 @@ const screenController = function() {
         }
         if (e.target.dataset.marker = ' ') errorDisplay.classList.add('hidden') //hide teh error message as long as valid squares are clicked
         
-        game.playRound(clickedBox)
-        console.log(game.getWinner().marker)
-        if (game.getWinner().marker == 'O' || game.getWinner().marker == 'X') { //grab the winner value from checkWinner() and check if a player was assigned to it and check the marker
-            resultDisplay.textContent = `${game.getWinner().name} Wins`
+        if (game.getWinner().marker != 'O' && game.getWinner().marker != 'X' && game.returnTurn() == 9) {  //need to check for draw here since everything is fully updated at this point rather than at checkWinner()
+            resultDisplay.textContent = 'Draw'
             turnDisplay.classList.add('hidden')
             resultDisplay.classList.remove('hidden')
             freezeScreen()
         }
-        if (game.getWinner() == 'Draw') {  //check if winner was assigned the string "draw"
-            resultDisplay.textContent = 'Draw'
+
+        game.playRound(clickedBox)
+        console.log(game.getWinner().marker)
+        if (game.getWinner().marker == 'O' || game.getWinner().marker == 'X') { //grab the winner value from checkWinner() and check if a player was assigned to it and check the marker
+            resultDisplay.textContent = `${game.getWinner().name} Wins`
             turnDisplay.classList.add('hidden')
             resultDisplay.classList.remove('hidden')
             freezeScreen()
@@ -267,11 +269,13 @@ const screenController = function() {
         let reset = true
         boardDisplay.addEventListener('click', clickHandler)
         resetButton.classList.add('hidden')
+        errorDisplay.classList.add('hidden')
         turnDisplay.classList.add('hidden')
         resultDisplay.classList.add('hidden')
         heroSelection.classList.remove('hidden')
         game.resetRound()
         updateScreen(reset) //send the reset variable ad true to updateScreen
+        freezeScreen()
     }
     
 
