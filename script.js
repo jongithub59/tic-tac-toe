@@ -92,6 +92,8 @@ const createGame = () => {
             return playerTurn = playerTwo
     }
 
+    const returnTurn = () => turn
+
     const nextTurn = function() { //sets the other player as the active player
         turn++
         if (playerTurn == playerOne) {
@@ -158,7 +160,6 @@ const createGame = () => {
                 let isPlayerTwoWin = !combo.some((i) => playerTwoSquares.indexOf(i) == -1)
                 if (isPlayerOneWin) return winner = playerOne
                 if (isPlayerTwoWin) return winner = playerTwo
-                if (turn == 9 && isPlayerOneWin == false && isPlayerTwoWin == false) return winner = 'Draw'
             })
             
         }
@@ -170,7 +171,7 @@ const createGame = () => {
 
     const resetWinner = () => winner = ''
     
-    return { chooseHero, playRound, getTurn, resetRound, getBoard: board.getBoard, getWinner, resetWinner }
+    return { chooseHero, playRound, getTurn, resetRound, returnTurn, getBoard: board.getBoard, getWinner, resetWinner }
 }
 
 const screenController = function() {
@@ -242,16 +243,17 @@ const screenController = function() {
         }
         if (e.target.dataset.marker = ' ') errorDisplay.classList.add('hidden') //hide teh error message as long as valid squares are clicked
         
-        game.playRound(clickedBox)
-        console.log(game.getWinner().marker)
-        if (game.getWinner().marker == 'O' || game.getWinner().marker == 'X') { //grab the winner value from checkWinner() and check if a player was assigned to it and check the marker
-            resultDisplay.textContent = `${game.getWinner().name} Wins`
+        if (game.getWinner().marker != 'O' && game.getWinner().marker != 'X' && game.returnTurn() == 9) {  //need to check for draw here since everything is fully updated at this point rather than at checkWinner()
+            resultDisplay.textContent = 'Draw'
             turnDisplay.classList.add('hidden')
             resultDisplay.classList.remove('hidden')
             freezeScreen()
         }
-        if (game.getWinner() == 'Draw') {  //check if winner was assigned the string "draw"
-            resultDisplay.textContent = 'Draw'
+
+        game.playRound(clickedBox)
+        console.log(game.getWinner().marker)
+        if (game.getWinner().marker == 'O' || game.getWinner().marker == 'X') { //grab the winner value from checkWinner() and check if a player was assigned to it and check the marker
+            resultDisplay.textContent = `${game.getWinner().name} Wins`
             turnDisplay.classList.add('hidden')
             resultDisplay.classList.remove('hidden')
             freezeScreen()
