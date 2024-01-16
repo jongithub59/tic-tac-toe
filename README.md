@@ -9,7 +9,7 @@ Live preview [here](https://jongithub59.github.io/tic-tac-toe/).
 
 ## Features:
 
-* Interactive board that marks teh square you click
+* Interactive board that marks the square you click
 * Choose which hero to play as before the game starts
 * Uses icons of the two heros to mark squares
 
